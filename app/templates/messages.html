@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Messages</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <h1>📩 Your Messages</h1>
+        <a href="{{ url_for('main.home') }}" class="back-btn">⬅ Back to Home</a>
+
+    </nav>
+
+    <div class="messages-container">
+        <h2>Message Inbox</h2>
+        <ul id="message-list"></ul>
+    </div>
+
+    <script>
+        window.onload = function() {
+            loadMessages();
+        };
+
+        function loadMessages() {
+            fetch("/history")
+                .then(response => response.json())
+                .then(data => {
+                    let messageList = document.getElementById("message-list");
+                    messageList.innerHTML = "";
+
+                    if (data.chats.length === 0) {
+                        messageList.innerHTML = "<p>No messages yet.</p>";
+                        return;
+                    }
+
+                    data.chats.forEach(chat => {
+                        let listItem = document.createElement("li");
+                        listItem.innerHTML = `
+                            <a href="/chat/${chat.user_id}">
+                                ${chat.username} 
+                                ${chat.unread_count > 0 ? `<span style="color: red;">(${chat.unread_count} new)</span>` : ""}
+                            </a>`;
+                        messageList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error("Error loading messages:", error));
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+Flask
+Flask-MySQL
+python-dotenv
+Flask-SQLAlchemy
+Flask-Bcrypt
+Flask-Login
+Flask-wtf
+Flask-CORS
+PyMySQL
+email-validator

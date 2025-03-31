@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #6b90da, #93d4ef, #6da6df, #b0c4de);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 320px;
+        }
+        h2 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        .flash-message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .danger {
+            background-color: #ffdddd;
+            color: #d8000c;
+        }
+        .success {
+            background-color: #ddffdd;
+            color: #4F8A10;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        input.error {
+            border-color: red;
+        }
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: -5px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .home-btn {
+            display: block;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #4ecfde;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .home-btn:hover {
+            background-color: #15c2d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Register</h2>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="flash-message {{ category }}">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('auth.register') }}" onsubmit="return validateForm()">
+            <input type="text" name="username" id="username" placeholder="Username" required>
+
+            <input type="email" name="email" id="email" placeholder="Email" required>
+            <p class="error-message" id="email-error"></p>
+
+            <input type="password" name="password" id="password" placeholder="Password" required>
+            <p class="error-message" id="password-error"></p>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+        <a href="{{ url_for('main.home') }}" class="home-btn">🏠 Back to Home</a>
+    </div>
+
+    <script>
+        function validateForm() {
+            let email = document.getElementById("email").value.trim();
+            let password = document.getElementById("password").value.trim();
+            let emailError = document.getElementById("email-error");
+            let passwordError = document.getElementById("password-error");
+            let isValid = true;
+
+            // Reset error messages
+            emailError.textContent = "";
+            passwordError.textContent = "";
+            document.getElementById("email").classList.remove("error");
+            document.getElementById("password").classList.remove("error");
+
+            // Email validation
+            let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!email) {
+                emailError.textContent = "Email is required.";
+                document.getElementById("email").classList.add("error");
+                isValid = false;
+            } else if (!emailPattern.test(email)) {
+                emailError.textContent = "Invalid email format.";
+                document.getElementById("email").classList.add("error");
+                isValid = false;
+            }
+
+            // Password validation
+            if (password.length < 10) {
+                passwordError.textContent = "Password must be at least 10 characters long.";
+                document.getElementById("password").classList.add("error");
+                isValid = false;
+            } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                passwordError.textContent = "Password must contain at least one special character.";
+                document.getElementById("password").classList.add("error");
+                isValid = false;
+            }
+
+            return isValid;
+        }
+    </script>
+</body>
+</html>

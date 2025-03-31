@@ -1,0 +1,39 @@
+{% if reviews %}
+    {% for review in reviews %}
+        <div class="review">
+            <strong>{{ review.user.username }}</strong> 
+            <span class="star">{{ "⭐" * review.rating }}</span>
+            <p>{{ review.comment }}</p>
+            <small>{{ review.created_at.strftime('%d %b, %Y %H:%M') if review.created_at else "N/A" }}</small>
+
+           {% if review.user_id == current_user.id %}
+           <button onclick="deleteReview('{{ review.product_id }}', '{{ review.id }}')" class="btn btn-danger btn-sm">
+            🗑 Delete
+        </button>
+            {% endif %}
+
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No reviews yet. Be the first to review!</p>
+{% endif %}
+<script>
+    function deleteReview(productId, reviewId) {
+    fetch(`/product/${productId}/review/${reviewId}`, {  
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(response => response.json())
+      .then(data => {
+          if (data.message) {
+              alert(data.message);  // Show success message
+              location.reload();    // Refresh the page to remove the deleted review
+          } else {
+              alert(data.error);  // Show error if any
+          }
+      })
+      .catch(error => console.error("Error:", error));
+}
+
+    </script>
